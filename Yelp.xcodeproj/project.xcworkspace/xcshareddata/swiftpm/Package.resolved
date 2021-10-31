@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "NetworkClient",
+        "repositoryURL": "https://github.com/GokulKatragadda9/NetworkClient",
+        "state": {
+          "branch": null,
+          "revision": "044f94f42c9914c9ac3fe67f8d589c1339a807aa",
+          "version": "2.2.3"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
