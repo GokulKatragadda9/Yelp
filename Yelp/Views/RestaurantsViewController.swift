@@ -6,10 +6,13 @@
 //
 
 import UIKit
+import Combine
 
 class RestaurantsViewController: ViewController<RestaurantsView> {
     var viewModel: RestaurantsViewModel
     var dataSource: UITableViewDataSource & UITableViewDataSourcePrefetching
+    
+    private var cancellables = Set<AnyCancellable>()
     
     init(viewModel: RestaurantsViewModel,
          dataSource: UITableViewDataSource & UITableViewDataSourcePrefetching) {
@@ -32,7 +35,7 @@ class RestaurantsViewController: ViewController<RestaurantsView> {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         setupTableView()
-        viewModel.handleUpdates = updatesHandler
+        subscribeToStateChange()
         viewModel.fetchRestaurants()
     }
     
@@ -43,17 +46,22 @@ class RestaurantsViewController: ViewController<RestaurantsView> {
                                     forCellReuseIdentifier: String(describing: type(of: RestaurantTableViewCell.self)))
     }
     
-    func updatesHandler() {
-        switch viewModel.viewState {
-        case .loading:
-            rootView.loadingView.startAnimating()
-        case .error:
-            rootView.loadingView.stopAnimating()
-            rootView.errorView.isHidden = false
-        case .newDataAvailable:
-            rootView.loadingView.stopAnimating()
-            rootView.errorView.isHidden = true
-            rootView.tableView.reloadData()
-        }
+    func subscribeToStateChange() {
+        viewModel.viewStatePublisher
+            .receive(on: RunLoop.main, options: .none)
+            .sink {[weak self] state in
+                guard let self = self else { return }
+                switch state {
+                case .loading:
+                    self.rootView.loadingView.startAnimating()
+                case .error:
+                    self.rootView.loadingView.stopAnimating()
+                    self.rootView.errorView.isHidden = false
+                case .newDataAvailable:
+                    self.rootView.loadingView.stopAnimating()
+                    self.rootView.errorView.isHidden = true
+                    self.rootView.tableView.reloadData()
+                }
+            }.store(in: &cancellables)
     }
 }

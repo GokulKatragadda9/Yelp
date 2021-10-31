@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 enum RestaurantsViewState {
     case loading
@@ -16,8 +17,7 @@ enum RestaurantsViewState {
 typealias RestaurantsViewModel = RestaurantsFetchable & RestaurantsPresentable
 
 protocol RestaurantsFetchable {
-    var handleUpdates: (() -> Void)? { get set }
-    var viewState: RestaurantsViewState { get }
+    var viewStatePublisher: Published<RestaurantsViewState>.Publisher { get }
     
     func fetchRestaurants()
     func fetchNextPage()
@@ -34,16 +34,19 @@ protocol RestaurantsPresentable {
 }
 
 class RestaurantsViewModelImpl: RestaurantsFetchable {
-    var handleUpdates: (() -> Void)?
-    var viewState: RestaurantsViewState = .loading
     private var dataController: RestaurantsDataController
+    
+    @Published var viewState: RestaurantsViewState = .loading
+    var viewStatePublisher: Published<RestaurantsViewState>.Publisher {
+        $viewState
+    }
     
     init(dataController: RestaurantsDataController = RestaurantsDataControllerImpl()) {
         self.dataController = dataController
     }
     
     func fetchRestaurants() {
-        setLoadingState()
+        viewState = .loading
         let coordinates = Coordinates(latitude: 42.498993, longitude: -83.367714)
         dataController.delegate = self
         dataController.fetchRestaurants(around: coordinates)
@@ -52,11 +55,6 @@ class RestaurantsViewModelImpl: RestaurantsFetchable {
     func fetchNextPage() {
         let coordinates = Coordinates(latitude: 42.498993, longitude: -83.367714)
         dataController.fetchRestaurants(around: coordinates)
-    }
-    
-    private func setLoadingState() {
-        viewState = .loading
-        handleUpdates?()
     }
 }
 
@@ -94,11 +92,9 @@ extension RestaurantsViewModelImpl: RestaurantsPresentable {
 extension RestaurantsViewModelImpl: RestaurantsDataControllerDelegate {
     func fetchError() {
         viewState = .error
-        handleUpdates?()
     }
     
     func modelUpdated() {
         viewState = .newDataAvailable
-        handleUpdates?()
     }
 }
