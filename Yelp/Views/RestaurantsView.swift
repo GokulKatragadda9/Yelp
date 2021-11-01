@@ -22,11 +22,11 @@ class RestaurantsView: UIView {
     }
     
     func setupView() {
-        let tableViewConstraints = [tableView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
+        let tableViewConstraints = [tableView.topAnchor.constraint(equalTo: topAnchor),
                                    tableView.bottomAnchor.constraint(equalTo: bottomAnchor),
                                    tableView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
                                    tableView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor)]
-        let errorViewConstraints = [errorView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
+        let errorViewConstraints = [errorView.topAnchor.constraint(equalTo: topAnchor),
                                     errorView.bottomAnchor.constraint(equalTo: bottomAnchor),
                                     errorView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
                                     errorView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor)]
@@ -36,7 +36,6 @@ class RestaurantsView: UIView {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         errorView.translatesAutoresizingMaskIntoConstraints = false
         loadingView.translatesAutoresizingMaskIntoConstraints = false
-        translatesAutoresizingMaskIntoConstraints = false
         
         addSubview(tableView)
         addSubview(errorView)

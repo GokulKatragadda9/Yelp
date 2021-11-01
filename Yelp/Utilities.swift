@@ -16,3 +16,22 @@ class ViewController<T: UIView>: UIViewController {
         view = rootView
     }
 }
+
+@propertyWrapper
+struct UseAutoLayout<T: UIView> {
+    var wrappedValue: T {
+        didSet {
+            wrappedValue.translatesAutoresizingMaskIntoConstraints = false
+        }
+    }
+}
+
+extension UIView {
+    func addSubViews(_ views: [UIView]) {
+        views.forEach { view in
+            @UseAutoLayout
+            var view = view
+            addSubview(view)
+        }
+    }
+}

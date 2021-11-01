@@ -34,6 +34,8 @@ class RestaurantsViewController: ViewController<RestaurantsView> {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        navigationItem.title = "Restaurants"
+        navigationController?.navigationBar.prefersLargeTitles = true
         setupTableView()
         subscribeToStateChange()
         viewModel.fetchRestaurants()
